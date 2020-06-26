@@ -59,7 +59,7 @@ def PCA(data,threshold=0.9):
 		m+=1
 		lower_sum = upper_sum
 	#print(m)	
-	eigVec_firstm = eigVec[eigVal_rank[0:m+1]]
+	eigVec_firstm = eigVec.T[eigVal_rank[0:m+1]]
 	#print(eigVec_firstm)
 	#print(eigVec_firstm)
 	data_pca = eigVec_firstm * data
@@ -137,28 +137,33 @@ def Kmeans(k,data):
 				max_dis = dis
 	S = 0
 	#calculate S
-	for C in group.keys():
-		dis_C_min = 100000
-		for otherC in group.keys():
-			if C is otherC:
+	s = []
+	for i in range(tot):
+		a_s = []
+		b_s = {}
+		for m in range(k):
+			if m == grouplabel[i]:
 				continue
-			dis_C = cal_dis(currentP[C],currentP[otherC])
-			if dis_C_min > dis_C :
-				dis_C_min = dis_C
-				nearC = otherC
-		for Vec in group[C]:
-			a = 0
-			for otherVec in group[C]:
-				if otherVec is Vec:
-					continue
-				a += cal_dis(Vec,otherVec)
-			a /= len(group[C]) - 1
-			b = 0
-			for otherVec in group[nearC]:
-				b += cal_dis(Vec,otherVec)
-			b /= len(group[nearC]) - 1
-			S += (b-a)/(max(a,b))
-	S /= tot
+			b_s[m] = []
+		for j in range(tot):
+			if i == j:
+				continue
+			if grouplabel[i] == grouplabel[j]:
+				a_s.append(cal_dis(data_mat[i],data_mat[j]))
+			elif grouplabel[i] != grouplabel[j]:
+				b_s[grouplabel[j]].append(cal_dis(data_mat[i],data_mat[j]))
+		a_i = np.mean(np.array(a_s))
+		for m in range(k):
+			if m == grouplabel[i]:
+				continue
+			b_s[m] = np.mean(np.array(b_s[m]))
+		b_s_rank = sorted(b_s.items(),key=lambda b_s:b_s[1],reverse=False)
+		#print(b_s_rank)
+		b_i = b_s_rank[0][1]
+		#print(a_i)
+		#print(b_i)
+		s.append((b_i - a_i) / max(a_i, b_i))
+	S = np.mean(np.array(s))
 	return (grouplabel,S)
 ```
 
@@ -170,47 +175,41 @@ def Kmeans(k,data):
 
 | K    | threshold=0.7（4维） | threshold=0.8（5维） | threshold=0.9（8维） | thrshold=0.99（12维） | threshold=1（13维） |
 | ---- | -------------------- | -------------------- | -------------------- | --------------------- | ------------------- |
-| 2    | 0.332010668007553    | 0.2701819758157376   | 0.27114957199138906  | 0.26134135189474395   | 0.2680411489143324  |
-| 3    | 0.32768527409527737  | 0.2916266882314143   | 0.2734895101044082   | 0.31586331944148943   | 0.30955142992972723 |
-| 4    | 0.31082456668431163  | 0.279747765356576    | 0.24317829812240205  | 0.272221243296691     | 0.34419009337878215 |
-| 5    | 0.2577042684644359   | 0.2663635392614887   | 0.2621713869985771   | 0.23453211921894798   | 0.22787357468477382 |
+| 2    | 0.364                | 0.323                | 0.293                | 0.260                 | 0.259               |
+| 3    | 0.471                | 0.431                | 0.371                | 0.341                 | 0.338               |
+| 4    | 0.489                | 0.449                | 0.384                | 0.350                 | 0.344               |
+| 5    | 0.488                | 0.450                | 0.378                | 0.363                 | 0.353               |
 
 ![S_trend](/Users/xuyuming/Downloads/AI/AILab2/unsupervise/output/S_trend.png)
 
 可以看到
 
-对于threshold=0.7，也就是降维到4维的情况下，k=2时聚类效果最好，此时分类更接近于2类
+随着维度的下降，轮廓系数是逐渐在升高的，而当k增大的时候，轮廓系数也是在增大的
 
-对于threshold=0.8，也就是降维到5维到情况下，k=3时聚类效果最好，此时分类更接近于3类
+降维的效果是使得主成分的作用更加明显，因此聚类效果也越好
 
-对于threshold=0.9、0.99时，也就是8维以及12维的情况，也是k=3时聚类效果最好，也是分为3类
-
-而对于threshold=1，不进行降维的情况，反而是k=4的时候聚类效果最好，此时分类更接近于4类
-
-但是从12维到13维其实增加的属性在特征值占比上并不高，原因个人认为是：注意到因为样本点的选取具有随机性，因此结果只能做一个参考，我们的聚类结果会收到初始随机选择样本中心点的影响
+k越大说明簇越多，我们分的也就可以越细，因此聚类效果也能更好
 
 **兰德系数：**
 
+[[0.6876785374214436, 0.9318225099980956, 0.8741192153875452, 0.8404113502190059], [0.6876785374214436, 0.9542944201104552, 0.8776106138513299, 0.835650352313845], [0.6876785374214436, 0.9382974671491144, 0.8708817368120358, 0.8341903129562623], [0.682092299879388, 0.9620389767028502, 0.8708817368120358, 0.8743096553037517], [0.6775217418904336, 0.9620389767028502, 0.882308131784422, 0.8847838506951057]]
+
 | K    | threshold=0.7（4维） | threshold=0.8（5维） | threshold=0.9（8维） | thrshold=0.99（12维） | threshold=1（13维） |
 | ---- | -------------------- | -------------------- | -------------------- | --------------------- | ------------------- |
-| 2    | 0.681774900019044    | 0.6815209801307688   | 0.7097695677013902   | 0.7279883196851393    | 0.6932012949914302  |
-| 3    | 0.6561924712753127   | 0.6545419920015235   | 0.8254300768107662   | 0.9339173490763664    | 0.9310607503332698  |
-| 4    | 0.7156097251317209   | 0.7535707484288707   | 0.7906430521170571   | 0.8872595696057893    | 0.942487145305656   |
-| 5    | 0.7083730083158764   | 0.7420808734844156   | 0.7750269789881292   | 0.8630737002475719    | 0.8900526883768172  |
+| 2    | 0.687                | 0.587                | 0.687                | 0.682                 | 0.677               |
+| 3    | 0.931                | 0.954                | 0.938                | 0.962                 | 0.962               |
+| 4    | 0.874                | 0.877                | 0.870                | 0.870                 | 0.882               |
+| 5    | 0.840                | 0.835                | 0.834                | 0.874                 | 0.884               |
 
 ![RI_trend](/Users/xuyuming/Downloads/AI/AILab2/unsupervise/output/RI_trend.png)
 
 可以看到
 
-对于threshold=0.7以及0.8，也就是降维至4维以及5维的情况下，与真实聚合情况相比，结果好的是k=4的情况，但是总体也都是不佳（最高也只有0.75）
-
-对于threshold=0.9以及threshold=0.99的情况下，也就是降维至8维以及12维的情绪下，与真实聚合情况相比，结果好的是k=3的情况，这相对比较符合我们的真实聚合情况
-
-而对于threshold=1，也就是不进行降维的情况下，k=3以及k=4的效果都不错，但是k=4的效果比k=3的效果来的好，我想主要原因出在kmeans算法的样本点随机选取的问题
+对于任意的threshold，兰德系数最高，也就是聚类最符合真实结果的点都在k=3的位置，这也符合我们的真实结果，除此之外，当threshlod增大时，同一k聚类的兰德系数也呈上升趋势，这是因为维度变大后计算距离的维度也增加，也就能分的更细的原因，但是总体来看 threshold=0.8就能取得很不错的效果
 
 **算法结果总结**
 
-可以看到，总体结果上，当出现降维的情况时如果降维太多会出现聚类结果不是k=3最好的情况，而且由于kmeans算法的初始点选择的随机性，会导致最后的结果也会稍稍偏离预期，这个误差我认为如果经过多次试验取平均值可以消除，不过这里没有做更多的实验
+
 
 ##### 聚类结果可视化
 
@@ -224,6 +223,8 @@ def Kmeans(k,data):
 
 ![privious_dim=3](/Users/xuyuming/Downloads/AI/AILab2/unsupervise/output/privious_dim=3.png)
 
+可以看到，在不进行降维的情况下，不管是2维还是3维的聚类效果都不是那么直观明显
+
 k=3， 降维结果矩阵为8维/threshold=0.9，2d图：
 
 ![k=3matrix_dim=8_dim=2](/Users/xuyuming/Downloads/AI/AILab2/unsupervise/output/k=3matrix_dim=8_dim=2.png)
@@ -233,3 +234,5 @@ k=3， 降维结果矩阵为8维/threshold=0.9，2d图：
 ![k=3matrix_dim=8_dim=3](/Users/xuyuming/Downloads/AI/AILab2/unsupervise/output/k=3matrix_dim=8_dim=3.png)
 
 更进一步的话其实还可以标注出聚类效果的中心点（但是我懒了）
+
+可以看到在进行了降维之后在二维、三维上，可视化后的点集聚类效果明显

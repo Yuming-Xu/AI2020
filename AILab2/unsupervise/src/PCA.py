@@ -3,7 +3,7 @@ def PCA(data,threshold=0.9):
 	cov = np.cov(data)
 	#print(cov)
 	eigVal,eigVec = np.linalg.eig(np.mat(cov))
-	#rint(eigVal)
+	#print(eigVal)
 	#print(eigVec)
 	eigVal_sum = np.sum(eigVal)
 	eigVal_rank = np.argsort(eigVal)[::-1]
@@ -21,8 +21,7 @@ def PCA(data,threshold=0.9):
 		m+=1
 		lower_sum = upper_sum
 	#print(m)	
-	eigVec_firstm = eigVec[eigVal_rank[0:m+1]]
-	#print(eigVec_firstm)
+	eigVec_firstm = eigVec.T[eigVal_rank[0:m+1]]
 	#print(eigVec_firstm)
 	data_pca = eigVec_firstm * data
 	return data_pca

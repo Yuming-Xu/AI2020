@@ -1,0 +1,83 @@
+
+Normal:
+sudoku01:
+total use: 0.000289s
+total search: 111 nodes
+
+sudoku02:
+total use: 0.005866s
+total search: 14853 nodes
+
+sudoku03:
+total use: 1.583090s
+total search: 4233934 nodes
+
+
+add Degree heuristic:
+sudoku01:
+total use: 0.000644s
+total search: 99 nodes
+
+sudoku02:
+total use: 0.001308s
+total search: 1830 nodes
+
+sudoku03:
+total use: 0.110417s
+total search: 266841 nodes
+
+
+add forward checking:
+sudoku01:
+total use: 0.000518s
+total search: 50 nodes
+
+sudoku02:
+total use: 0.002423s
+total search: 279 nodes
+
+sudoku03:
+total use: 0.279575s
+total search: 36951 nodes
+
+
+add MRV:
+sudoku01:
+total use: 0.001026s
+total search: 49 nodes
+
+sudoku02:
+total use: 0.004263s
+total search: 270 nodes
+
+sudoku03:
+total use: 0.280161s
+total search: 28275 nodes
+
+rewrite: first Degree heuristic, than MRV
+sudoku01:
+total use: 0.000602s
+total search: 58 nodes
+
+sudoku02:
+total use: 0.010894s
+total search: 7022 nodes
+
+sudoku03:
+total use: 2.881143s
+total search: 2043076 nodes
+
+rewrite: first MRV, than Degree heuristic
+sudoku01:
+total use: 0.000558s
+total search: 47 nodes
+
+total use: 0.000708s
+total search: 83 nodes
+
+sudoku03:
+total use: 0.001264s
+total search: 433 nodes
+
+
+

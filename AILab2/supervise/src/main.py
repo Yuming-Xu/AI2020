@@ -333,7 +333,6 @@ def SVM(allset,labelset,trainlen,setlen):
 	para['gamma'] = Gammas
 	"""
 	###use linear
-	"""
 	para = {'name':'linear'}
 	for C in Cs:
 		start = time.time()
@@ -343,7 +342,6 @@ def SVM(allset,labelset,trainlen,setlen):
 		runtime.append(end-start)
 		F1_list.append(F1)
 		F1_without_list.append(F1_without)
-	"""
 	###use gaussian
 	"""
 	para = {'name':'gaussian'}
@@ -366,6 +364,7 @@ def SVM(allset,labelset,trainlen,setlen):
 	para['sigma'] = Sigmas
 	"""
 	###use poly
+	"""
 	para = {'name':'poly','offset':1}
 	for dimension in Dimensions :
 		para['dimension'] = dimension
@@ -383,16 +382,17 @@ def SVM(allset,labelset,trainlen,setlen):
 		runtime.append(runtime_single_C)
 		F1_list.append(F1_single_C)
 		F1_without_list.append(F1_without_single_C)
-	para['dimension'] = Dismensions
+	para['dimension'] = Dimensions
+	"""
 	plotfig_SVM(runtime,F1_list,F1_without_list,para,Cs)
 
 if __name__ == '__main__':
 	train_factor = 7
 	Init()
-	allset,labelset,setlen,trainlen = Preprocessing("../data/student-mat.csv",train_factor)
+	allset,labelset,setlen,trainlen = Preprocessing("../data/student-por.csv",train_factor)
 	attrlist[29] = [i for i in range(94)]
 	attrlist[30] = [i for i in range(21)]
 	attrlist[31] = [i for i in range(21)]
-	#DTL_test(allset,labelset,trainlen,setlen,attrlist)
-	SVM(allset,labelset,trainlen,setlen)
+	DTL_test(allset,labelset,trainlen,setlen,attrlist)
+	#SVM(allset,labelset,trainlen,setlen)
 	#KNN(allset,labelset,trainlen,setlen)

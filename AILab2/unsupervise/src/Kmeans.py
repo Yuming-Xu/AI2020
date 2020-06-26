@@ -54,8 +54,8 @@ def Kmeans(k,data):
 			dis = cal_dis(lastP[lastC],curC)
 			if dis>max_dis :
 				max_dis = dis
-	S = 0
 	#calculate S
+	"""
 	for C in group.keys():
 		dis_C_min = 100000
 		for otherC in group.keys():
@@ -77,5 +77,32 @@ def Kmeans(k,data):
 				b += cal_dis(Vec,otherVec)
 			b /= len(group[nearC]) - 1
 			S += (b-a)/(max(a,b))
-	S /= tot
+	"""
+	s = []
+	for i in range(tot):
+		a_s = []
+		b_s = {}
+		for m in range(k):
+			if m == grouplabel[i]:
+				continue
+			b_s[m] = []
+		for j in range(tot):
+			if i == j:
+				continue
+			if grouplabel[i] == grouplabel[j]:
+				a_s.append(cal_dis(data_mat[i],data_mat[j]))
+			elif grouplabel[i] != grouplabel[j]:
+				b_s[grouplabel[j]].append(cal_dis(data_mat[i],data_mat[j]))
+		a_i = np.mean(np.array(a_s))
+		for m in range(k):
+			if m == grouplabel[i]:
+				continue
+			b_s[m] = np.mean(np.array(b_s[m]))
+		b_s_rank = sorted(b_s.items(),key=lambda b_s:b_s[1],reverse=False)
+		#print(b_s_rank)
+		b_i = b_s_rank[0][1]
+		#print(a_i)
+		#print(b_i)
+		s.append((b_i - a_i) / max(a_i, b_i))
+	S = np.mean(np.array(s))
 	return (grouplabel,S)

@@ -60,6 +60,20 @@ def showResult(data,label,dim,name):
 			plt.scatter(float(data[i][0]), float(data[i][1]),float(data[i][2]), c=colors[label[i]])
 		plt.savefig('../output/'+name+'dim='+str(dim)+'.png')
 
+def showResult_matrix(data,label,dim,name):
+	colors = ['red','blue','green','orange','purple']
+	if dim == 2:
+		fig = plt.figure()
+		for i in range(len(data)):
+			plt.scatter(float(data[i,0]), float(data[i,1]), c=colors[label[i]])
+		plt.savefig('../output/'+name+'dim='+str(dim)+'.png')
+	if dim == 3:
+		fig = plt.figure()
+		ax = Axes3D(fig)
+		for i in range(len(data)):
+			plt.scatter(float(data[i,0]), float(data[i,1]),float(data[i,2]), c=colors[label[i]])
+		plt.savefig('../output/'+name+'dim='+str(dim)+'.png')
+
 def showResult_privious(data,label,dim):
 	colors = ['red','blue','green']
 	if dim == 2:
@@ -88,8 +102,8 @@ def testThreshold(traindata):
 def Kmeans_warp(k,traindata,groupdata,traindata_origin):
 	dim = np.shape(traindata)[0]
 	group,S = Kmeans(k,traindata.T)
-	showResult(traindata_origin,group,2,'k='+str(k)+'matrix_dim='+str(dim)+'_')
-	showResult(traindata_origin,group,3,'k='+str(k)+'matrix_dim='+str(dim)+'_')
+	showResult_matrix(traindata.T,group,2,'k='+str(k)+'matrix_dim='+str(dim)+'_')
+	showResult_matrix(traindata.T,group,3,'k='+str(k)+'matrix_dim='+str(dim)+'_')
 	RI = calLand(groupdata,group)
 	with open("../output/result_k="+str(k)+"_dim="+str(dim)+""+".csv",'w',encoding='utf-8') as resultset:
 		csv_writer = csv.writer(resultset)
@@ -159,13 +173,13 @@ if __name__ == '__main__':
 	traindata_std = standaridzation_wrap(list(np.array(traindata).T))
 	#print(traindata_std.T)
 	#print(np.shape(traindata_std.T))
-	#testKmeans(traindata_std,traindata,groupdata)
+	testKmeans(traindata_std,traindata,groupdata)
 	#testThreshold(traindata_std)
-	traindata_pca = PCA(traindata_std,threshold=0.5)
-	print(traindata_pca.T[0])
+	#traindata_pca = PCA(traindata_std,threshold=0.5)
+	#print(traindata_pca.T[0])
 	#group_std,S_std = Kmeans(3,traindata_std.T)
-	group_pca,S_pca = Kmeans(3,traindata_pca.T)
-	print(S_pca)
-	RI = calLand(groupdata,group_pca)
-	#showResult(traindata_std.T,group_std,2)
-	print(RI)
+	#group_pca,S_pca = Kmeans(3,traindata_pca.T)
+	#print(S_pca)
+	#RI = calLand(groupdata,group_pca)
+	#showResult_test(traindata_pca.T,group_pca,2,'test')
+	#print(RI)
